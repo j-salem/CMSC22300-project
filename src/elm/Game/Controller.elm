@@ -4,6 +4,7 @@ import Game.Model (..)
 import Time (..)
 import Keyboard
 import Signal
+import Char
 
 upVelocity : Bool -> { x:Int, y:Int } -> CharModel -> CharModel
 upVelocity isRunning {x,y} m =
@@ -14,16 +15,44 @@ upVelocity isRunning {x,y} m =
     }
 
 upPosition : Time -> CharModel -> CharModel
-upPosition dt ({x,y,dx,dy} as m) =
+upPosition dt ({x,y,dx,dy,atks,dir} as m) =
     { m |
         x <- (x + dt * dx),
         y <- (y + dt * dy)
     }
 
+newAtk : Time -> Bool -> AttackState -> AttackState
+newAtk dt isAttacking a = case a of
+    CanAtk    ->     if isAttacking then Atk atkTime else CanAtk
+    Atk t     ->     let newT = t - dt in
+                        if newT <= 0
+                            then CanAtk
+                            else Atk newT
+
+upAtkState : Time -> Bool -> CharModel -> CharModel
+upAtkState dt isAttacking ({x,y,dx,dy,atks,dir} as m) =
+    { m |
+        atks <- newAtk dt isAttacking atks
+    }
+
+upDir : { x:Int, y:Int} -> CharModel -> CharModel
+upDir {x,y} ({x,y,dx,dy,atks,dir} as m) =
+    { m |
+        dir <- if | x < 0 -> Left
+                     | x > 0 -> Right
+                     | y < 0 -> Down
+                     | y > 0 -> Up
+                     | otherwise -> m.dir
+    }
+
 -- NOTE(jsalem): Keyboard.arrows return signal {x:Int, y:Int}
-upCharModel : (Time, { x:Int, y:Int }, Bool) -> CharModel -> CharModel
-upCharModel (dt, dir, isRunning) m =
-    m |> upVelocity isRunning dir |> upPosition dt
+upCharModel : (Time, { x:Int, y:Int }, Bool, Bool) -> CharModel -> CharModel
+upCharModel (dt, dir, isRunning, isAttacking) m =
+    m
+    |> upVelocity isRunning dir
+    |> upPosition dt
+    |> upAtkState dt isAttacking
+    |> upDir dir
 
 -- Signals
 
@@ -34,6 +63,12 @@ playerSig =
 deltaTime : Signal Time
 deltaTime = (fps 60) -- gotta have that 60 fps
 
-input : Signal (Time, { x:Int, y:Int }, Bool)
+input : Signal (Time, { x:Int, y:Int }, Bool, Bool)
 input =
-    Signal.sampleOn deltaTime (Signal.map3 (,,) deltaTime Keyboard.arrows Keyboard.shift)
+    Signal.sampleOn deltaTime
+        (Signal.map4 (,,,)
+            deltaTime
+            Keyboard.arrows
+            Keyboard.shift
+            {-(Keyboard.isDown (Char.toCode 'c'))-}
+            Keyboard.space)
