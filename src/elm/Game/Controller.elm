@@ -15,7 +15,7 @@ upVelocity isRunning {x,y} m =
     }
 
 upPosition : Time -> CharModel -> CharModel
-upPosition dt ({x,y,dx,dy,atks,dir} as m) =
+upPosition dt ({x,y,dx,dy,atks,dir,col} as m) =
     { m |
         x <- (x + dt * dx),
         y <- (y + dt * dy)
@@ -30,13 +30,13 @@ newAtk dt isAttacking a = case a of
                             else Atk newT
 
 upAtkState : Time -> Bool -> CharModel -> CharModel
-upAtkState dt isAttacking ({x,y,dx,dy,atks,dir} as m) =
+upAtkState dt isAttacking ({x,y,dx,dy,atks,dir,col} as m) =
     { m |
         atks <- newAtk dt isAttacking atks
     }
 
 upDir : { x:Int, y:Int} -> CharModel -> CharModel
-upDir {x,y} ({x,y,dx,dy,atks,dir} as m) =
+upDir {x,y} ({x,y,dx,dy,atks,dir,col} as m) =
     { m |
         dir <- if | x < 0 -> Left
                      | x > 0 -> Right

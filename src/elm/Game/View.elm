@@ -3,6 +3,7 @@ module Game.View where
 import Game.Model (..)
 import Game.Controller (..)
 import Game.Util (..)
+import Game.Collision (..)
 import Color (..)
 import Graphics.Collage (..)
 import Graphics.Element (..)
@@ -10,7 +11,7 @@ import List
 import Text (asText)
 
 view : (Int, Int) -> CharModel -> Element
-view (w,h) {x,y,dx,dy,atks,dir} =
+view (w,h) {x,y,dx,dy,atks,dir,col} =
     let
         xOff = 25
         yOff = 25
@@ -26,7 +27,7 @@ view (w,h) {x,y,dx,dy,atks,dir} =
     container w h middle <|
     collage w h
     <| List.append
-        [ move (x,y) (filled blue (square 30)),
+        [ move (x,y) (filled blue (rect col.w col.h)),
           move (0,-100) (toForm (asText ("Press <Shift> to sprint, <Arrow Keys> to move, <Space> to Attack")))
         ]
     <| atkSqr atks
