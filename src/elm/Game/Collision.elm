@@ -1,6 +1,5 @@
 module Game.Collision where
 
-
 --type Actor = Player | Weapon | Enemy
 
 -- NOTE(jsalem): The anchor of the Rect is the center so be sure to check edges
@@ -19,6 +18,7 @@ topEdge {x,y} {w,h} = y + (h / 2)
 bottomEdge : {x:Float,y:Float} -> Rect -> Float
 bottomEdge {x,y} {w,h} = y - (h / 2)
 
+-- Base level collision checking.
 isCollision : {x:Float,y:Float} -> Rect -> {x:Float,y:Float} -> Rect -> Bool
 isCollision pos1 dim1 pos2 dim2 =
     if  | (rightEdge pos1 dim1) < (leftEdge pos2 dim2) -> False
