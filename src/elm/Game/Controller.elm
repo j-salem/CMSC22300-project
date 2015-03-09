@@ -58,6 +58,8 @@ upCharModel (dt, dir, isRunning, isAttacking) m =
 
 -- Signals
 
+-- updateSingle : (Positioned a -> Positioned a) -> Positioned a -> Quadtree (Positioned a) -> Quadtree (Positioned a)
+
 localEntities : Signal (Positioned a) -> Signal (Quadtree (Positioned a)) -> Signal (A.Array (Positioned a))
 localEntities a qt =
     Signal.map2 (\a q -> queryPoint {x=a.x,y=a.y} q) a qt

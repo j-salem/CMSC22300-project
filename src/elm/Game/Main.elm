@@ -24,9 +24,11 @@ foos = A.push foo3 <| A.push foo2 <| A.push foo1 A.empty
 quadt : Quadtree (Positioned {})
 quadt = insertMany foos (emptyQT bounds 5)
 
+quadt2 = updateSingle (\f -> {f | x <- -100 , y <- -1}) foo1 quadt
+
 quadSig : Signal (Quadtree (Positioned {}))
 quadSig =
-    constant quadt
+    constant quadt2
 
 
 
