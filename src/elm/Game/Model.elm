@@ -23,7 +23,8 @@ type alias Room =
 -------- Entity Model --------
 ------------------------------
 
-type alias NonPlayerPositioned = Positioned ({foo:Float, bar:Float})
+type alias NonPlayerPositioned = Positioned ({isBlocking:Bool})
+type alias Moving a = { a | dx:Float, dy:Float }
 
 ------------------------------
 -------- Player Model --------
@@ -32,7 +33,7 @@ type alias NonPlayerPositioned = Positioned ({foo:Float, bar:Float})
 -- Positioned -> CharModel  (think subcalss)
 -- contains pos (x,y) and velocities (dx,dy)
 type alias CharModel =
-  { x:Float, y:Float, dx:Float, dy:Float, atks:AttackState, dir:Dir, col:Rect }
+  Positioned ( Moving ({ atks:AttackState, dir:Dir, col:Rect }))
 
 -- Our hero
 player : CharModel

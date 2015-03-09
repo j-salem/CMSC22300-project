@@ -4,14 +4,16 @@ import Game.Model (..)
 import Game.Controller (..)
 import Game.Util (..)
 import Game.Collision (..)
+import Game.Quadtree (..)
 import Color (..)
 import Graphics.Collage (..)
 import Graphics.Element (..)
+import Array as A
 import List
 import Text (asText)
 
-view : (Int, Int) -> CharModel -> Element
-view (w,h) {x,y,dx,dy,atks,dir,col} =
+view : (Int, Int) -> CharModel -> Quadtree (Positioned a) -> Element
+view (w,h) {x,y,dx,dy,atks,dir,col} qt =
     let
         xOff = 25
         yOff = 25
@@ -30,4 +32,19 @@ view (w,h) {x,y,dx,dy,atks,dir,col} =
         [ move (x,y) (filled blue (rect col.width col.height)),
           move (0,-100) (toForm (asText ("Press <Shift> to sprint, <Arrow Keys> to move, <Space> to Attack")))
         ]
-    <| atkSqr atks
+    <| atkSqr atks ++ drawQuadtree qt
+
+
+-- QT draw code
+
+drawQuadtree : Quadtree (Positioned a) -> List (Form)
+drawQuadtree qt = case qt of
+    Leaf _ _ ar        -> drawMany ar
+    Node _ nw ne se sw -> drawQuadtree nw ++ drawQuadtree ne ++ drawQuadtree se ++ drawQuadtree sw
+
+drawMany : A.Array (Positioned a) -> List (Form)
+drawMany ar = A.toList <| A.map draw ar
+
+draw : Positioned a -> Form
+draw a =
+    move (a.x,a.y) (filled blue (rect 20 20))

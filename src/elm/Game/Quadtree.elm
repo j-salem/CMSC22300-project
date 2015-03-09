@@ -1,8 +1,9 @@
 module Game.Quadtree where
 
 import Game.Collision (..)
-import Game.Util (fromJust)
+import Game.Util (fromJust, forEach)
 import Trampoline (..)
+import Signal
 import Array as A
 
 -- http://en.wikipedia.org/wiki/Quadtree
@@ -23,7 +24,7 @@ type Quadtree a =
     Leaf AABB Int (A.Array a) |
     Node AABB (Quadtree a) (Quadtree a) (Quadtree a) (Quadtree a)
 
-emptyQT : AABB -> Int -> Quadtree a
+emptyQT : AABB -> Int -> Quadtree (Positioned a)
 emptyQT aabb maxElem =
     Leaf aabb maxElem A.empty
 
@@ -73,19 +74,6 @@ insert elem qt = case qt of
         if | (A.length ar) >= maxElem -> subdivide (Leaf aabb maxElem (A.push elem ar))
            | otherwise                -> Leaf aabb maxElem (A.push elem ar)
 
-
-forEach : A.Array a -> b -> (a -> b -> b) -> b
-forEach a b f =
-    let
-        isDone arr = case A.get 0 arr of
-            Nothing -> True
-            _       -> False
-        foo pred f ar acc = case pred ar of
-            True  -> Done (acc)
-            False -> Continue (\() -> foo pred f (A.slice 1 (A.length ar) ar) (f (fromJust (A.get 0 ar)) acc))
-    in
-        trampoline <| foo isDone f a b
-
 -- Potentially won't work
 insertMany : A.Array (Positioned a) -> Quadtree (Positioned a) -> Quadtree (Positioned a)
 insertMany a qt =
@@ -100,8 +88,12 @@ remove a qt = case qt of
         if  | containsPointQT nw {x = a.x, y = a.y} -> remove a nw
             | containsPointQT ne {x = a.x, y = a.y} -> remove a ne
             | containsPointQT se {x = a.x, y = a.y} -> remove a se
-            | otherwise                    -> remove a sw
+            | otherwise                             -> remove a sw
     Leaf aabb maxElem ar -> Leaf aabb maxElem (removeA a ar)
+
+updateSingle : (Positioned a -> Positioned a) -> Positioned a -> Quadtree (Positioned a) -> Quadtree (Positioned a)
+updateSingle f a qt =
+    insert (f a) (remove a qt)
 
 queryPoint: {x:Float, y:Float} -> Quadtree (Positioned a) -> A.Array (Positioned a)
 queryPoint ({x,y} as p) qt = case qt of
@@ -109,7 +101,7 @@ queryPoint ({x,y} as p) qt = case qt of
         if  | containsPointQT nw {x = p.x, y = p.y} -> queryPoint p nw
             | containsPointQT ne {x = p.x, y = p.y} -> queryPoint p ne
             | containsPointQT se {x = p.x, y = p.y} -> queryPoint p se
-            | otherwise                    -> queryPoint p sw
+            | otherwise                             -> queryPoint p sw
     Leaf aabb maxElem ar -> ar
 
 containsPoint : AABB -> { x:Float, y:Float } -> Bool

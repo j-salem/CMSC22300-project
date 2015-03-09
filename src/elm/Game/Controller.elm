@@ -1,6 +1,8 @@
 module Game.Controller where
 
 import Game.Model (..)
+import Game.Quadtree (..)
+import Array as A
 import Time (..)
 import Keyboard
 import Signal
@@ -55,6 +57,10 @@ upCharModel (dt, dir, isRunning, isAttacking) m =
     |> upDir dir
 
 -- Signals
+
+localEntities : Signal (Positioned a) -> Signal (Quadtree (Positioned a)) -> Signal (A.Array (Positioned a))
+localEntities a qt =
+    Signal.map2 (\a q -> queryPoint {x=a.x,y=a.y} q) a qt
 
 playerSig : Signal CharModel
 playerSig =
