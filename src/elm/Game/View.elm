@@ -27,7 +27,7 @@ view (w,h) {x,y,dx,dy,atks,dir,col} =
     container w h middle <|
     collage w h
     <| List.append
-        [ move (x,y) (filled blue (rect col.w col.h)),
+        [ move (x,y) (filled blue (rect col.width col.height)),
           move (0,-100) (toForm (asText ("Press <Shift> to sprint, <Arrow Keys> to move, <Space> to Attack")))
         ]
     <| atkSqr atks
