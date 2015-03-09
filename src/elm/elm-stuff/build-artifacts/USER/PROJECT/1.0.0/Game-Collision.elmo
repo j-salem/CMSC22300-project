@@ -1,0 +1,85 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Collision = Elm.Game.Collision || {};
+Elm.Game.Collision.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Collision = _elm.Game.Collision || {};
+   if (_elm.Game.Collision.values)
+   return _elm.Game.Collision.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Game.Collision",
+   $Basics = Elm.Basics.make(_elm);
+   var bottomEdge = F2(function (_v0,
+   _v1) {
+      return function () {
+         return function () {
+            return _v0.y - _v1.h / 2;
+         }();
+      }();
+   });
+   var topEdge = F2(function (_v4,
+   _v5) {
+      return function () {
+         return function () {
+            return _v4.y + _v5.h / 2;
+         }();
+      }();
+   });
+   var leftEdge = F2(function (_v8,
+   _v9) {
+      return function () {
+         return function () {
+            return _v8.x - _v9.w / 2;
+         }();
+      }();
+   });
+   var rightEdge = F2(function (_v12,
+   _v13) {
+      return function () {
+         return function () {
+            return _v12.x + _v13.w / 2;
+         }();
+      }();
+   });
+   var isCollision = F4(function (pos1,
+   dim1,
+   pos2,
+   dim2) {
+      return _U.cmp(A2(rightEdge,
+      pos1,
+      dim1),
+      A2(leftEdge,
+      pos2,
+      dim2)) < 0 ? false : _U.cmp(A2(leftEdge,
+      pos1,
+      dim1),
+      A2(rightEdge,
+      pos2,
+      dim2)) > 0 ? false : _U.cmp(A2(topEdge,
+      pos1,
+      dim1),
+      A2(bottomEdge,
+      pos2,
+      dim2)) < 0 ? false : _U.cmp(A2(bottomEdge,
+      pos1,
+      dim1),
+      A2(topEdge,
+      pos2,
+      dim2)) > 0 ? false : true;
+   });
+   var Rect = F2(function (a,b) {
+      return {_: {},h: b,w: a};
+   });
+   _elm.Game.Collision.values = {_op: _op
+                                ,Rect: Rect
+                                ,rightEdge: rightEdge
+                                ,leftEdge: leftEdge
+                                ,topEdge: topEdge
+                                ,bottomEdge: bottomEdge
+                                ,isCollision: isCollision};
+   return _elm.Game.Collision.values;
+};

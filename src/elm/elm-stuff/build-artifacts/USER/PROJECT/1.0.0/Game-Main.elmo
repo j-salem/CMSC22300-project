@@ -1,0 +1,28 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Main = Elm.Game.Main || {};
+Elm.Game.Main.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Main = _elm.Game.Main || {};
+   if (_elm.Game.Main.values)
+   return _elm.Game.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Game.Main",
+   $Game$Controller = Elm.Game.Controller.make(_elm),
+   $Game$View = Elm.Game.View.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var main = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   $Game$View.view,
+   $Window.dimensions),
+   $Game$Controller.playerSig);
+   _elm.Game.Main.values = {_op: _op
+                           ,main: main};
+   return _elm.Game.Main.values;
+};

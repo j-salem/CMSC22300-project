@@ -1,0 +1,130 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Controller = Elm.Game.Controller || {};
+Elm.Game.Controller.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Controller = _elm.Game.Controller || {};
+   if (_elm.Game.Controller.values)
+   return _elm.Game.Controller.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Game.Controller",
+   $Basics = Elm.Basics.make(_elm),
+   $Game$Model = Elm.Game.Model.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var deltaTime = $Time.fps(60);
+   var input = A2($Signal.sampleOn,
+   deltaTime,
+   A5($Signal.map4,
+   F4(function (v0,v1,v2,v3) {
+      return {ctor: "_Tuple4"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2
+             ,_3: v3};
+   }),
+   deltaTime,
+   $Keyboard.arrows,
+   $Keyboard.shift,
+   $Keyboard.space));
+   var upDir = F2(function (_v0,
+   _v1) {
+      return function () {
+         return function () {
+            return _U.replace([["dir"
+                               ,_U.cmp(_v0.x,
+                               0) < 0 ? $Game$Model.Left : _U.cmp(_v0.x,
+                               0) > 0 ? $Game$Model.Right : _U.cmp(_v0.y,
+                               0) < 0 ? $Game$Model.Down : _U.cmp(_v0.y,
+                               0) > 0 ? $Game$Model.Up : _v1.dir]],
+            _v1);
+         }();
+      }();
+   });
+   var newAtk = F3(function (dt,
+   isAttacking,
+   a) {
+      return function () {
+         switch (a.ctor)
+         {case "Atk":
+            return function () {
+                 var newT = a._0 - dt;
+                 return _U.cmp(newT,
+                 0) < 1 ? $Game$Model.CanAtk : $Game$Model.Atk(newT);
+              }();
+            case "CanAtk":
+            return isAttacking ? $Game$Model.Atk($Game$Model.atkTime) : $Game$Model.CanAtk;}
+         _U.badCase($moduleName,
+         "between lines 25 and 30");
+      }();
+   });
+   var upAtkState = F3(function (dt,
+   isAttacking,
+   _v6) {
+      return function () {
+         return _U.replace([["atks"
+                            ,A3(newAtk,
+                            dt,
+                            isAttacking,
+                            _v6.atks)]],
+         _v6);
+      }();
+   });
+   var upPosition = F2(function (dt,
+   _v8) {
+      return function () {
+         return _U.replace([["x"
+                            ,_v8.x + dt * _v8.dx]
+                           ,["y",_v8.y + dt * _v8.dy]],
+         _v8);
+      }();
+   });
+   var upVelocity = F3(function (isRunning,
+   _v10,
+   m) {
+      return function () {
+         return function () {
+            var scale = isRunning ? 2 : 1;
+            return _U.replace([["dx"
+                               ,scale * $Basics.toFloat(_v10.x)]
+                              ,["dy"
+                               ,scale * $Basics.toFloat(_v10.y)]],
+            m);
+         }();
+      }();
+   });
+   var upCharModel = F2(function (_v12,
+   m) {
+      return function () {
+         switch (_v12.ctor)
+         {case "_Tuple4":
+            return upDir(_v12._1)(A2(upAtkState,
+              _v12._0,
+              _v12._3)(upPosition(_v12._0)(A2(upVelocity,
+              _v12._2,
+              _v12._1)(m))));}
+         _U.badCase($moduleName,
+         "between lines 51 and 55");
+      }();
+   });
+   var playerSig = A3($Signal.foldp,
+   upCharModel,
+   $Game$Model.player,
+   input);
+   _elm.Game.Controller.values = {_op: _op
+                                 ,upVelocity: upVelocity
+                                 ,upPosition: upPosition
+                                 ,newAtk: newAtk
+                                 ,upAtkState: upAtkState
+                                 ,upDir: upDir
+                                 ,upCharModel: upCharModel
+                                 ,playerSig: playerSig
+                                 ,deltaTime: deltaTime
+                                 ,input: input};
+   return _elm.Game.Controller.values;
+};

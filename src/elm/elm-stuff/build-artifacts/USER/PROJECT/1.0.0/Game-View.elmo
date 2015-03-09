@@ -1,0 +1,116 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.View = Elm.Game.View || {};
+Elm.Game.View.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.View = _elm.Game.View || {};
+   if (_elm.Game.View.values)
+   return _elm.Game.View.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Game.View",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Game$Model = Elm.Game.Model.make(_elm),
+   $Game$Util = Elm.Game.Util.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var view = F2(function (_v0,
+   _v1) {
+      return function () {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var yOff = 25;
+                    var xOff = 25;
+                    var inDir = F2(function (_v6,
+                    d) {
+                       return function () {
+                          switch (_v6.ctor)
+                          {case "_Tuple2":
+                             return function () {
+                                  switch (d.ctor)
+                                  {case "Down":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: _v6._0
+                                            ,_1: _v6._1 - yOff};
+                                     case "Left":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: _v6._0 - xOff
+                                            ,_1: _v6._1};
+                                     case "Right":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: _v6._0 + xOff
+                                            ,_1: _v6._1};
+                                     case "Up":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: _v6._0
+                                            ,_1: _v6._1 + yOff};}
+                                  _U.badCase($moduleName,
+                                  "between lines 18 and 23");
+                               }();}
+                          _U.badCase($moduleName,
+                          "between lines 18 and 23");
+                       }();
+                    });
+                    var atkSqr = function (a) {
+                       return function () {
+                          switch (a.ctor)
+                          {case "Atk":
+                             return _L.fromArray([A2($Graphics$Collage.move,
+                               A2(inDir,
+                               {ctor: "_Tuple2"
+                               ,_0: _v1.x
+                               ,_1: _v1.y},
+                               _v1.dir),
+                               A2($Graphics$Collage.alpha,
+                               A5($Game$Util.lerp,
+                               1,
+                               0,
+                               $Game$Model.atkTime,
+                               a._0,
+                               0),
+                               A2($Graphics$Collage.filled,
+                               $Color.red,
+                               $Graphics$Collage.square(50))))]);
+                             case "CanAtk":
+                             return _L.fromArray([]);}
+                          _U.badCase($moduleName,
+                          "between lines 23 and 26");
+                       }();
+                    };
+                    return A3($Graphics$Element.container,
+                    _v0._0,
+                    _v0._1,
+                    $Graphics$Element.middle)(A2($Graphics$Collage.collage,
+                    _v0._0,
+                    _v0._1)($List.append(_L.fromArray([A2($Graphics$Collage.move,
+                                                      {ctor: "_Tuple2"
+                                                      ,_0: _v1.x
+                                                      ,_1: _v1.y},
+                                                      A2($Graphics$Collage.filled,
+                                                      $Color.blue,
+                                                      A2($Graphics$Collage.rect,
+                                                      _v1.col.w,
+                                                      _v1.col.h)))
+                                                      ,A2($Graphics$Collage.move,
+                                                      {ctor: "_Tuple2"
+                                                      ,_0: 0
+                                                      ,_1: -100},
+                                                      $Graphics$Collage.toForm($Text.asText("Press <Shift> to sprint, <Arrow Keys> to move, <Space> to Attack")))]))(atkSqr(_v1.atks))));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 15 and 33");
+         }();
+      }();
+   });
+   _elm.Game.View.values = {_op: _op
+                           ,view: view};
+   return _elm.Game.View.values;
+};

@@ -1,0 +1,60 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Model = Elm.Game.Model || {};
+Elm.Game.Model.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Model = _elm.Game.Model || {};
+   if (_elm.Game.Model.values)
+   return _elm.Game.Model.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Game.Model",
+   $Game$Collision = Elm.Game.Collision.make(_elm);
+   var Left = {ctor: "Left"};
+   var Right = {ctor: "Right"};
+   var Down = {ctor: "Down"};
+   var Up = {ctor: "Up"};
+   var Atk = function (a) {
+      return {ctor: "Atk",_0: a};
+   };
+   var CanAtk = {ctor: "CanAtk"};
+   var atkTime = 500.0;
+   var player = {_: {}
+                ,atks: CanAtk
+                ,col: {_: {},h: 30,w: 50}
+                ,dir: Down
+                ,dx: 0
+                ,dy: 0
+                ,x: 0
+                ,y: 0};
+   var CharModel = F7(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g) {
+      return {_: {}
+             ,atks: e
+             ,col: g
+             ,dir: f
+             ,dx: c
+             ,dy: d
+             ,x: a
+             ,y: b};
+   });
+   _elm.Game.Model.values = {_op: _op
+                            ,CharModel: CharModel
+                            ,player: player
+                            ,atkTime: atkTime
+                            ,CanAtk: CanAtk
+                            ,Atk: Atk
+                            ,Up: Up
+                            ,Down: Down
+                            ,Right: Right
+                            ,Left: Left};
+   return _elm.Game.Model.values;
+};
