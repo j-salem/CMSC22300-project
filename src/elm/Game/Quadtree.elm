@@ -7,8 +7,6 @@ import Array as A
 
 -- http://en.wikipedia.org/wiki/Quadtree
 
--- 2point
-type alias XY = { x:Float, y:Float }
 -- Axis Aligned Bounding Box with half dimensions (c -> center, d->dimensions)
 type alias AABB = { center:XY, dimensions:Rect }
 
