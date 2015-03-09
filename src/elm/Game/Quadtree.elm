@@ -1,6 +1,7 @@
 module Game.Quadtree where
 
 import Game.Collision (..)
+import Trampoline (..)
 import Array as A
 
 -- http://en.wikipedia.org/wiki/Quadtree
@@ -29,6 +30,11 @@ aabbQT : Quadtree a -> AABB
 aabbQT qt = case qt of
     Leaf aabb _ _     -> aabb
     Node aabb _ _ _ _ -> aabb
+
+maxElemQT : Quadtree a -> Int
+maxElemQT qt = case qt of
+    Leaf _ me _       -> me
+    Node _ me _ _ _ _ -> me
 
 subdivideAABB : AABB -> (AABB, AABB, AABB, AABB)
 subdivideAABB {{x,y},{w,h}} =
@@ -63,9 +69,52 @@ insert elem qt = case qt of
            | containsPointQT se {elem.x,elem.y} -> Node aabb nw ne (insert elem se) sw
            | otherwise                          -> Node aabb nw ne se (insert elem sw)
     Leaf aabb maxElem ar ->
+<<<<<<< HEAD
         if | {- Check if in Array -}     -> Leaf aabb maxElem ar
            | (A.length ar) + 1 > maxElem -> subdivide (Leaf aabb maxElem (A.push elem ar))
            | otherwise                   -> Leaf aabb maxElem (A.push elem ar)
+=======
+        if | (A.length ar) >= maxElem -> subdivide (Leaf aabb maxElem (A.push elem ar))
+           | otherwise                -> Leaf aabb maxElem (A.push elem ar)
+
+
+forEach : A.Array a -> b -> (a -> b -> b) -> b
+forEach a b f =
+    let
+        isDone arr = if A.get arr 0 == Nothing then True else False
+        foo pred f {ar,acc} = case pred acc of
+            True  -> Done (acc)
+            False -> Continue (foo pred f {ar = A.slice 1 (A.length ar), acc = f (A.get 0 ar) acc})
+    in
+        trampoline <| foo isDone f {a,b}
+
+-- Potentially won't work
+insertMany : A.Array Entity a -> Quadtree Entity a -> Quadtree Entity a
+insertMany a qt =
+    forEach a qt insert
+
+removeA : a -> A.Array a -> A.Array a
+removeA a ar = A.filter (\i -> i /= a) ar
+
+remove : Entity a -> Quadtree Entity a -> Quadtree Entity a
+remove a qt = case qt of
+    Node aabb nw ne se sw ->
+        if  | containsPointQT nw {a.x,a.y} -> remove a nw
+            | containsPointQT ne {a.x,a.y} -> remove a ne
+            | containsPointQT se {a.x,a.y} -> remove a se
+            | otherwise                    -> remove a sw
+    Leaf aabb maxElem ar -> Leaf aabb maxElem (removeA a ar)
+
+queryPoint: {x:Float, y:Float} -> Quadtree Entity a -> A.Array Entity a
+queryPoint ({x,y} as p) qt = case qt of
+    Node aabb nw ne se sw ->
+        if  | containsPointQT nw {a.x,a.y} -> queryPoint p nw
+            | containsPointQT ne {a.x,a.y} -> queryPoint p ne
+            | containsPointQT se {a.x,a.y} -> queryPoint p se
+            | otherwise                    -> queryPoint p sw
+    Leaf aabb maxElem ar -> ar
+
+>>>>>>> 645e561... more qt functionality and removed unusedvectormath
 
 containsPoint : AABB -> { x:Float, y:Float } -> Bool
 containsPoint {{cx,cy},{w,h}} {x,y} =
@@ -82,3 +131,13 @@ containsPointQT qt xy =
 intersectsAABB : AABB -> AABB -> Bool
 intersectsAABB {c1,d1} {c2,d2} =
     isCollision c1 d1 c2 d2
+
+allItems : Quadtree a -> A.Array a
+allItems qt = case qt of
+    Node aabb nw ne se sw -> A.append (allItems nw) <| A.append (allItems ne) <| A.append (allItems se) (allItems sw)
+    Leaf aabb maxElem ar -> ar
+
+fixQT : Quadtree a -> Quadtree a
+fixQT qt =
+    insertMany (allItems qt)
+    <| emptyQT (aabbQT qt) (maxElemQT qt)
