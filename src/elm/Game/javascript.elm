@@ -13,6 +13,7 @@ import Mouse
 
 type alias Room = {level:List Int, width:Int, height:Int}
 
+
 sampleListOn : Signal.Signal b -> List a -> Signal.Signal a
 sampleListOn ticker xs = 
   let cycler _ ts = tail ts ++ [head ts]
@@ -22,9 +23,9 @@ serverJson : String -> Signal.Signal Graphics.Element.Element
 serverJson i = let jsonTxtSig = respStr <~ (Http.sendGet (Signal.constant ("./level" ++ i ++".json")))
              in toMap <~ (getJsonArray <~ jsonTxtSig)
              
-signalRoom : Signal.Signal String
+signalRoom : Signal.Channel String
 signalRoom =
-  sampleListOn Mouse.clicks ["1", "2"]
+  Signal.channel "1"
 
 getJsonArray : String -> Room
 getJsonArray jsonTxt = case decodeString (object3 Room ("level" := list int) ("width" := int) ("height" := int)) jsonTxt of
@@ -56,4 +57,4 @@ parseLevel lvl w h (x,y)  = let newIndex = if | x == w-1 -> (0,y+1)
 transformShape : Form -> (Float,Float) -> Form
 transformShape shape (x,y) = move (20*x,-20*y) shape
 
-main = serverJson <~ signalRoom
+main = serverJson "2"
