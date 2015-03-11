@@ -12,9 +12,10 @@ import Array as A
 import List
 import Text (asText)
 
-view : (Int, Int) -> CharModel -> Quadtree (Positioned a) -> Element
-view (w,h) {x,y,dx,dy,atks,dir,col} qt =
+view : (Int, Int) -> GameState -> Element
+view (w,h) {player,currentRoom} =
     let
+        {x,y,dx,dy,atks,dir,col} = player
         xOff = 25
         yOff = 25
         inDir (x',y') d = case d of
@@ -32,7 +33,7 @@ view (w,h) {x,y,dx,dy,atks,dir,col} qt =
         [ move (x,y) (filled blue (rect col.width col.height)),
           move (0,-100) (toForm (asText ("Press <Shift> to sprint, <Arrow Keys> to move, <Space> to Attack")))
         ]
-    <| atkSqr atks ++ drawQuadtree qt
+    <| atkSqr atks -- ++ drawQuadtree currentRoom.contents
 
 
 -- QT draw code

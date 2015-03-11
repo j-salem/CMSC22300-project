@@ -34,4 +34,4 @@ quadSig =
 
 main : Signal Element
 main =
-    view <~ Window.dimensions ~ playerSig ~ quadSig
+    view <~ Window.dimensions ~ stateSig
