@@ -1,5 +1,6 @@
 module Game.Collision where
 
+import Debug
 --type Actor = Player | Weapon | Enemy
 
 type Collision = NoCol | ColX | ColY | ColXY
@@ -29,6 +30,8 @@ isCollision pos1 dim1 pos2 dim2 =
         | (bottomEdge pos1 dim1) > (topEdge pos2 dim2) -> False
         | otherwise -> True
 
+
+-- XXX(jsalem): This is broken and requires a massive overhaul that includes collision resolution
 -- The first x,y is the 'new' x,y of a moving object and chacking if it collides with
 -- the other object.  This is for mapping to find if there is a collision in a specific
 -- direction when moving through the Quadtree
@@ -39,6 +42,6 @@ isCollisionDetailed pos1 dim1 pos2 dim2 =
         topCol   = (topEdge pos1 dim1) >= (bottomEdge pos2 dim2)
         bottomCol= (bottomEdge pos1 dim1) <= (topEdge pos2 dim2)
     in
-    if  | (rightCol || leftCol)                            -> ColX
-        | (topCol || bottomCol)                            -> ColY
-        | otherwise                                        -> NoCol
+    if  | ((rightCol && (topCol || bottomCol)) || (leftCol && (topCol || bottomCol))) -> ColX
+        | ((topCol && (rightCol || leftCol)) || (bottomCol && (rightCol || leftCol))) -> ColY
+        | otherwise                                                                   -> NoCol

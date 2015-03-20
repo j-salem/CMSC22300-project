@@ -20,8 +20,24 @@ state = { player = player, currentRoom = arena }
 type alias Room =
     { id:Int, contents:Quadtree (Blockable (Positioned (Bounded {}))) }
 
+-- Test Room with test objects
+type alias Foo = Blockable (Positioned (Bounded {}))
+sqr : Rect
+sqr = {width = 30, height = 30}
+
+foo1 = {x=100,y=100, col = sqr, isBlocking=True }
+
+foo2 = {x=100,y=-75, col = sqr, isBlocking=True }
+
+foo3 = {x=-81,y=40, col = sqr, isBlocking=True }
+
+foos = A.push foo3 <| A.push foo2 <| A.push foo1 A.empty
+
+qt : Quadtree (Blockable (Positioned (Bounded {})))
+qt = insertMany foos (emptyQT {center={x=0,y=0}, dimensions={width=800,height=600}} 5)
+
 arena : Room
-arena = { id=0, contents = (emptyQT {center={x=0,y=0}, dimensions={width=800,height=600}} 5) }
+arena = { id=0, contents = qt }
 
 ------------------------------
 -------- Entity Model --------

@@ -106,10 +106,10 @@ queryPoint ({x,y} as p) qt = case qt of
 
 containsPoint : AABB -> { x:Float, y:Float } -> Bool
 containsPoint {center,dimensions} {x,y} =
-    if  (x < center.x + dimensions.width / 2) &&
-        (x > center.x - dimensions.width / 2) &&
-        (y < center.y + dimensions.height / 2) &&
-        (y > center.y - dimensions.height / 2)
+    if  (x <= center.x + dimensions.width / 2) &&
+        (x >= center.x - dimensions.width / 2) &&
+        (y <= center.y + dimensions.height / 2) &&
+        (y >= center.y - dimensions.height / 2)
     then True else False
 
 containsPointQT : Quadtree (Positioned a) -> { x:Float, y:Float} -> Bool

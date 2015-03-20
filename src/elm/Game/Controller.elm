@@ -4,7 +4,9 @@ import Game.Model (..)
 import Game.Quadtree (..)
 import Game.Collision (..)
 import Array as A
+import List as L
 import Time (..)
+import Debug
 import Keyboard
 import Signal
 import Char
@@ -14,18 +16,26 @@ import Char
 ----- Update Functions -----
 ----------------------------
 -- checks for collisions as a result of move
--- TODO(jsalem): make pretty, cause this... this is ugly
+-- XXX(jsalem): collision detection is broken so this is bypassed for now... 
+-- XXX(jsalem): BUG BUG BUG -- Elm can't handle mapping over an empty array
+--              and the length of the array is then 1 instead of 0! using lists instead
 checkMove : (Float,Float) -> Rect -> A.Array (Positioned (Bounded a)) -> Collision
 checkMove (x,y) col ar =
-    let colAr = A.map (\b -> isCollisionDetailed {x=x,y=y} col {x=b.x,y=b.y} b.col) ar
-        colArLen = A.length (A.filter (\i -> i /= NoCol) colAr)
-        colArFilterLen = A.length (A.filter (\i -> i == ColX) colAr)
+    let colAr = L.map (\b -> isCollisionDetailed {x=x,y=y} col {x=b.x,y=b.y} b.col) <| A.toList ar
+        colArLen = L.length (L.filter (\i -> i /= NoCol) colAr)
+        colArFilterLen = L.length (L.filter (\i -> i == ColX) colAr)
+        colInX = L.member ColX colAr
+        colInY = L.member ColY colAr
     in
-    if  | A.length ar == 0        -> NoCol
-        | colArLen == 0              -> NoCol
-        | colArFilterLen == 0        -> ColY
-        | colArFilterLen == colArLen -> ColX
-        | otherwise                  -> ColXY
+    if  | (colInX && colInY) -> ColXY
+        | colInX -> ColX
+        | colInY -> ColY
+        | otherwise -> NoCol
+    -- if  | A.length ar == 0           -> NoCol
+    --     | colArLen == 0              -> NoCol
+    --     | colArFilterLen == 0        -> ColY
+    --     | colArFilterLen == colArLen -> ColX
+    --     | otherwise                  -> ColXY
 
 upVelocity : Bool -> { x:Int, y:Int } -> CharModel -> CharModel
 upVelocity isRunning {x,y} m =
@@ -35,13 +45,14 @@ upVelocity isRunning {x,y} m =
         dy <- scale * toFloat y
     }
 
+-- XXX(jsalem): hacked to work for now without collision detection
 upPosition : Time -> A.Array (Positioned (Bounded a)) -> CharModel -> CharModel
 upPosition dt ar ({x,y,dx,dy,atks,dir,col} as m) =
     let newX = x + dt * dx
         newY = y + dt * dy
         collisions = checkMove (newX,newY) col ar
-        upX = if (collisions == ColX  || collisions == ColXY) then x else newX
-        upY = if (collisions == ColY  || collisions == ColXY) then y else newY
+        upX = if ({-collisions == ColX  || -}collisions == ColXY) then x else newX
+        upY = if ({-collisions == ColY  || -}collisions == ColXY) then y else newY
     in
     { m |
         x <- upX,

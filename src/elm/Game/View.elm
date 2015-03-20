@@ -33,7 +33,7 @@ view (w,h) {player,currentRoom} =
         [ move (x,y) (filled blue (rect col.width col.height)),
           move (0,-100) (toForm (asText ("Press <Shift> to sprint, <Arrow Keys> to move, <Space> to Attack")))
         ]
-    <| atkSqr atks -- ++ drawQuadtree currentRoom.contents
+    <| atkSqr atks ++ drawQuadtree currentRoom.contents
 
 
 -- QT draw code

@@ -2,6 +2,7 @@ module Game.Util where
 
 import Maybe (..)
 import Array as A
+import List as L
 import Trampoline (..)
 
 lerp : Float -> Float -> Float -> Float -> Float -> Float
@@ -20,6 +21,8 @@ forEach a b f =
     in
         trampoline <| foo isDone f a b
 
-
 fromJust : Maybe a -> a
 fromJust (Just a) = a
+
+member : a -> A.Array a -> Bool
+member a ar = L.member a <| A.toList ar
